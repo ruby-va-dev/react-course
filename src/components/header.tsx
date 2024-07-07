@@ -105,6 +105,7 @@ export class Header extends Component<HeaderProps, HeaderState> {
             value={this.state.queryString}
             onChange={this.handleChange}
             onSubmit={() => this.handleSearch()}
+            placeholder="Поиск по имени персонажа"
           />
           <button type="submit">Найти</button>
           <button onClick={() => this.testError()}>Сделать Ошибку</button>
