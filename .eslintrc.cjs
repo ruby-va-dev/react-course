@@ -3,17 +3,18 @@ module.exports = {
   env: { browser: true, es2020: true },
   extends: [
     'eslint:recommended',
-    'plugin:react/recommended',
     'plugin:@typescript-eslint/recommended',
+    'plugin:react/recommended',
     'plugin:react-hooks/recommended',
-    'prettier',
+    'plugin:prettier/recommended',
   ],
   ignorePatterns: ['dist', '.eslintrc.cjs'],
   parser: '@typescript-eslint/parser',
   plugins: [
-    'react',
     '@typescript-eslint',
+    'react',
     'react-refresh',
+    'react-hooks',
     'react-compiler',
     'prettier',
   ],
@@ -24,6 +25,8 @@ module.exports = {
     ],
     'react/react-in-jsx-scope': 'off',
     'prettier/prettier': 'error',
+    'react-compiler/react-compiler': 'error',
+    'react-hooks/exhaustive-deps': 'warn',
   },
   settings: {
     react: {

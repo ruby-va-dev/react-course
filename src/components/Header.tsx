@@ -1,4 +1,4 @@
-import { ChangeEvent, Component } from 'react'
+import { ChangeEvent, Component, FormEvent } from 'react'
 import { getCharacters } from '../api'
 
 interface HeaderProps {}
@@ -16,23 +16,41 @@ interface HeaderState {
 }
 
 export class Header extends Component<HeaderProps, HeaderState> {
-  state: HeaderState = {
-    queryString: '',
-    characters: [],
-    notFound: false,
+  constructor(props: HeaderProps) {
+    super(props)
+    this.state = {
+      queryString: this.getQueryFromStorage(),
+      characters: [],
+      notFound: false,
+    }
   }
 
-  handleSearch = async (searchString = '') => {
+  private setQueryToStorage = (query: string) => {
+    localStorage.setItem('RubyAPP:SearchQuery', query)
+  }
+
+  private getQueryFromStorage = () => {
+    return localStorage.getItem('RubyAPP:SearchQuery') || ''
+  }
+
+  handleSearch = async () => {
     try {
-      const data = await getCharacters(searchString)
+      this.setQueryToStorage(this.state.queryString)
+      const data = await getCharacters(this.state.queryString)
       this.setState((prevState) => ({
         ...prevState,
         characters: data.results ? data.results : [],
-        notFound: data.results ? false : true,
+        notFound: !data.results,
       }))
     } catch (e) {
       console.log(e)
     }
+  }
+
+  handleFormSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+
+    await this.handleSearch()
   }
 
   handleChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -40,15 +58,6 @@ export class Header extends Component<HeaderProps, HeaderState> {
       ...prevState,
       queryString: e.target.value,
     }))
-  }
-
-  async componentDidUpdate(
-    prevProps: Readonly<HeaderProps>,
-    prevState: Readonly<HeaderState>,
-  ) {
-    if (prevState.queryString !== this.state.queryString) {
-      await this.handleSearch(this.state.queryString)
-    }
   }
 
   async componentDidMount() {
@@ -59,11 +68,17 @@ export class Header extends Component<HeaderProps, HeaderState> {
     return (
       <header>
         <h1>Hallo!</h1>
-        <input
-          type="text"
-          value={this.state.queryString}
-          onChange={this.handleChange}
-        />
+
+        <form onSubmit={this.handleFormSubmit}>
+          <input
+            type="text"
+            value={this.state.queryString}
+            onChange={this.handleChange}
+            onSubmit={() => this.handleSearch()}
+          />
+          <button type="submit">Найти</button>
+        </form>
+
         {this.state.notFound && <h2>Не нашол никово прасти пажлауйста)</h2>}
         <ul className="list">
           {this.state.characters.map((character) => (
