@@ -1,5 +1,5 @@
 import './App.css'
-import { Header } from './components/rheader.tsx'
+import { Header } from './components/header.tsx'
 import { Component } from 'react'
 
 interface AppProps {}

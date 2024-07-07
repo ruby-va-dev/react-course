@@ -4,6 +4,10 @@ import {
   getMainQuerySearchStringfromStorage,
   setMainQuerySearchStringToStorage,
 } from '../const/local-storage-keys'
+import {
+  CharacterGenderKeys,
+  charactersGenders,
+} from '../const/character-genders'
 
 interface HeaderProps {}
 
@@ -11,6 +15,7 @@ interface Character {
   name: string
   id: string
   image: string
+  gender?: CharacterGenderKeys
 }
 
 interface HeaderState {
@@ -111,6 +116,9 @@ export class Header extends Component<HeaderProps, HeaderState> {
             <li key={character.id}>
               <h2>{character.name}</h2>
               <img src={character.image} alt="" />
+              {character.gender && (
+                <p>Пол: {charactersGenders[character.gender]}</p>
+              )}
             </li>
           ))}
         </ul>
