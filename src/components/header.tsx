@@ -17,6 +17,7 @@ interface HeaderState {
   queryString: string
   characters: Character[]
   notFound: boolean
+  loading: boolean
   throwTestError: boolean
 }
 
@@ -28,6 +29,7 @@ export class Header extends Component<HeaderProps, HeaderState> {
       characters: [],
       notFound: false,
       throwTestError: false,
+      loading: false,
     }
   }
 
@@ -40,6 +42,11 @@ export class Header extends Component<HeaderProps, HeaderState> {
 
   handleSearch = async () => {
     try {
+      this.setState((prevState) => ({
+        ...prevState,
+        loading: true,
+      }))
+
       setMainQuerySearchStringToStorage(this.state.queryString)
       const data = await getCharacters(this.state.queryString)
       this.setState((prevState) => ({
@@ -49,6 +56,11 @@ export class Header extends Component<HeaderProps, HeaderState> {
       }))
     } catch (e) {
       console.log(e)
+    } finally {
+      this.setState((prevState) => ({
+        ...prevState,
+        loading: false,
+      }))
     }
   }
 
@@ -72,6 +84,10 @@ export class Header extends Component<HeaderProps, HeaderState> {
   render() {
     if (this.state.throwTestError) {
       return <ErrorTestComponent />
+    }
+
+    if (this.state.loading) {
+      return <h1>Loading...</h1>
     }
 
     return (
