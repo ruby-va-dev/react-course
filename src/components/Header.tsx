@@ -1,5 +1,9 @@
 import { ChangeEvent, Component, FormEvent } from 'react'
 import { getCharacters } from '../api'
+import {
+  getMainQuerySearchStringfromStorage,
+  setMainQuerySearchStringToStorage,
+} from '../const/local-storage-keys'
 
 interface HeaderProps {}
 
@@ -13,29 +17,30 @@ interface HeaderState {
   queryString: string
   characters: Character[]
   notFound: boolean
+  throwTestError: boolean
 }
 
 export class Header extends Component<HeaderProps, HeaderState> {
   constructor(props: HeaderProps) {
     super(props)
     this.state = {
-      queryString: this.getQueryFromStorage(),
+      queryString: getMainQuerySearchStringfromStorage(),
       characters: [],
       notFound: false,
+      throwTestError: false,
     }
   }
 
-  private setQueryToStorage = (query: string) => {
-    localStorage.setItem('RubyAPP:SearchQuery', query)
-  }
-
-  private getQueryFromStorage = () => {
-    return localStorage.getItem('RubyAPP:SearchQuery') || ''
+  testError() {
+    this.setState((prevState) => ({
+      ...prevState,
+      throwTestError: true,
+    }))
   }
 
   handleSearch = async () => {
     try {
-      this.setQueryToStorage(this.state.queryString)
+      setMainQuerySearchStringToStorage(this.state.queryString)
       const data = await getCharacters(this.state.queryString)
       this.setState((prevState) => ({
         ...prevState,
@@ -65,6 +70,10 @@ export class Header extends Component<HeaderProps, HeaderState> {
   }
 
   render() {
+    if (this.state.throwTestError) {
+      return <ErrorTestComponent />
+    }
+
     return (
       <header>
         <h1>Hallo!</h1>
@@ -77,6 +86,7 @@ export class Header extends Component<HeaderProps, HeaderState> {
             onSubmit={() => this.handleSearch()}
           />
           <button type="submit">Найти</button>
+          <button onClick={() => this.testError()}>Сделать Ошибку</button>
         </form>
 
         {this.state.notFound && <h2>Не нашол никово прасти пажлауйста)</h2>}
@@ -89,6 +99,24 @@ export class Header extends Component<HeaderProps, HeaderState> {
           ))}
         </ul>
       </header>
+    )
+  }
+}
+
+interface ErrorTestComponentProps {}
+
+class ErrorTestComponent extends Component<ErrorTestComponentProps> {
+  constructor(props: ErrorTestComponentProps) {
+    super(props)
+    throw new Error('Test Error')
+  }
+
+  render() {
+    return (
+      <div>
+        Привет, это тестовый компонент, но он не загрузится из-за ошибки и
+        перенаправления на ErrorBoundary
+      </div>
     )
   }
 }
