@@ -1,23 +1,14 @@
 import { ChangeEvent, Component, FormEvent } from 'react'
-import { getCharacters } from '../api'
+
+import { Character } from '@/src/types'
+import { CharacterPreviewCard } from '@/src/components/character-preview-card.tsx'
+import { getCharacters } from '@/src/api'
 import {
   getMainQuerySearchStringfromStorage,
   setMainQuerySearchStringToStorage,
-} from '../const/local-storage-keys'
-import {
-  CharacterGenderKeys,
-  charactersGenders,
-} from '../const/character-genders'
-import { CharacterPreviewCard } from './character-preview-card.tsx'
+} from '@/src/const/local-storage-keys.ts'
 
 interface HeaderProps {}
-
-export interface Character {
-  name: string
-  id: string
-  image: string
-  gender?: CharacterGenderKeys
-}
 
 interface HeaderState {
   queryString: string

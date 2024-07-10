@@ -1,6 +1,6 @@
 import { Component } from 'react'
-import { charactersGenders } from '../const/character-genders.ts'
-import { Character } from './header.tsx'
+import { Character } from '@/src/types'
+import { charactersGenders } from '@/src/const/character-genders.ts'
 
 interface Props {
   character: Character
