@@ -5,13 +5,8 @@ export const getCharacters = async (name = '') => {
   if (name != '') {
     searchString += `?name=${name}`
   }
-  const response: Response = await new Promise((resolve) => {
-    setTimeout(async () => {
-      const res = await fetch(searchString)
-      resolve(res)
-    }, 500)
-  })
-
+  const response = await fetch(searchString)
   const data = await response.json()
+
   return data
 }

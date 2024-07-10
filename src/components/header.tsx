@@ -8,10 +8,11 @@ import {
   CharacterGenderKeys,
   charactersGenders,
 } from '../const/character-genders'
+import { CharacterPreviewCard } from './character-preview-card.tsx'
 
 interface HeaderProps {}
 
-interface Character {
+export interface Character {
   name: string
   id: string
   image: string
@@ -114,13 +115,7 @@ export class Header extends Component<HeaderProps, HeaderState> {
         {this.state.notFound && <h2>Не нашол никово прасти пажлауйста)</h2>}
         <ul className="list">
           {this.state.characters.map((character) => (
-            <li key={character.id}>
-              <h2>{character.name}</h2>
-              <img src={character.image} alt="" />
-              {character.gender && (
-                <p>Пол: {charactersGenders[character.gender]}</p>
-              )}
-            </li>
+            <CharacterPreviewCard key={character.id} character={character} />
           ))}
         </ul>
       </header>
@@ -130,7 +125,12 @@ export class Header extends Component<HeaderProps, HeaderState> {
 
 interface ErrorTestComponentProps {}
 
-class ErrorTestComponent extends Component<ErrorTestComponentProps> {
+interface ErrorTestComponentState {}
+
+class ErrorTestComponent extends Component<
+  ErrorTestComponentProps,
+  ErrorTestComponentState
+> {
   constructor(props: ErrorTestComponentProps) {
     super(props)
     throw new Error('Test Error')
