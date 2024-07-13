@@ -1,14 +1,11 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import App from './App.tsx'
 import './index.css'
-import ErrorBoundary from './components/error-boundary.tsx'
-import { ErrorBoundaryFallbackPage } from './pages/error-boundary-fallback.tsx'
+import { router } from '@/src/router'
+import { RouterProvider } from 'react-router-dom'
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <ErrorBoundary fallback={<ErrorBoundaryFallbackPage />}>
-      <App />
-    </ErrorBoundary>
+    <RouterProvider router={router} />
   </React.StrictMode>,
 )

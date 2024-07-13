@@ -7,7 +7,7 @@ import { useSearchQueryToLocalStorage } from '@/src/hooks/useSearchQueryToLocalS
 import { MAIN_QUERY_SEARCH_STRING } from '@/src/const/local-storage-keys.ts'
 
 export function Header() {
-  const { searchQuery, setSearchQuery, setQueryToLocalStorage } =
+  const { searchQuery, setSearchQuery, setSearchQueryToLocalStorage } =
     useSearchQueryToLocalStorage(MAIN_QUERY_SEARCH_STRING)
   const [characters, setCharacters] = useState<Character[]>([])
   const [notFound, setNotFound] = useState(false)
@@ -21,7 +21,7 @@ export function Header() {
   const handleSearch = async () => {
     try {
       setLoading(true)
-      setQueryToLocalStorage(searchQuery)
+      setSearchQueryToLocalStorage(searchQuery)
       const data = await getCharacters(searchQuery)
       setCharacters(data.results ? data.results : [])
       setNotFound(!data.results)

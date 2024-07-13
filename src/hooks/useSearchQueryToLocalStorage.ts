@@ -7,9 +7,9 @@ import {
 export function useSearchQueryToLocalStorage(key) {
   const [searchQuery, setSearchQuery] = useState(getKeyFromLocalStorage(key))
 
-  const setQueryToLocalStorage = (value) => {
+  const setSearchQueryToLocalStorage = (value) => {
     setKeyToLocalStorage(key, value)
   }
 
-  return { searchQuery, setSearchQuery, setQueryToLocalStorage }
+  return { searchQuery, setSearchQuery, setSearchQueryToLocalStorage }
 }
