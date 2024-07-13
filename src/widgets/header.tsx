@@ -1,4 +1,4 @@
-import { ChangeEvent, Component, FormEvent } from 'react'
+import { ChangeEvent, Component, FormEvent, useEffect, useState } from 'react'
 
 import { Character } from '@/src/types'
 import { CharacterPreviewCard } from '@/src/components/character-preview-card.tsx'
@@ -8,112 +8,84 @@ import {
   setMainQuerySearchStringToStorage,
 } from '@/src/const/local-storage-keys.ts'
 
-interface HeaderProps {}
+export function Header() {
+  const [queryString, setQueryString] = useState(
+    getMainQuerySearchStringfromStorage(),
+  )
+  const [characters, setCharacters] = useState<Character[]>([])
+  const [notFound, setNotFound] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const [throwTestError, setThrowTestError] = useState(false)
 
-interface HeaderState {
-  queryString: string
-  characters: Character[]
-  notFound: boolean
-  loading: boolean
-  throwTestError: boolean
-}
-
-export class Header extends Component<HeaderProps, HeaderState> {
-  constructor(props: HeaderProps) {
-    super(props)
-    this.state = {
-      queryString: getMainQuerySearchStringfromStorage(),
-      characters: [],
-      notFound: false,
-      throwTestError: false,
-      loading: false,
-    }
+  const testError = () => {
+    setThrowTestError(true)
   }
 
-  testError() {
-    this.setState((prevState) => ({
-      ...prevState,
-      throwTestError: true,
-    }))
-  }
-
-  handleSearch = async () => {
+  const handleSearch = async () => {
     try {
-      this.setState((prevState) => ({
-        ...prevState,
-        loading: true,
-      }))
+      setLoading(true)
 
-      setMainQuerySearchStringToStorage(this.state.queryString)
-      const data = await getCharacters(this.state.queryString)
-      this.setState((prevState) => ({
-        ...prevState,
-        characters: data.results ? data.results : [],
-        notFound: !data.results,
-      }))
+      setMainQuerySearchStringToStorage(queryString)
+      const data = await getCharacters(queryString)
+      setCharacters(data.results ? data.results : [])
+      setNotFound(!data.results)
     } catch (e) {
       console.log(e)
     } finally {
-      this.setState((prevState) => ({
-        ...prevState,
-        loading: false,
-      }))
+      setLoading(false)
     }
   }
 
-  handleFormSubmit = async (e: FormEvent<HTMLFormElement>) => {
+  const handleFormSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
 
-    await this.handleSearch()
+    await handleSearch()
   }
 
-  handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-    this.setState((prevState) => ({
-      ...prevState,
-      queryString: e.target.value,
-    }))
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setQueryString(e.target.value)
   }
 
-  async componentDidMount() {
-    await this.handleSearch()
+  useEffect(() => {
+    ;(async function () {
+      await handleSearch()
+    })()
+  }, [])
+
+  if (throwTestError) {
+    return <ErrorTestComponent />
   }
 
-  render() {
-    if (this.state.throwTestError) {
-      return <ErrorTestComponent />
-    }
-
-    if (this.state.loading) {
-      return <h1>Loading...</h1>
-    }
-
-    return (
-      <header>
-        <h1>Hallo!</h1>
-
-        <form onSubmit={this.handleFormSubmit}>
-          <input
-            type="text"
-            value={this.state.queryString}
-            onChange={this.handleChange}
-            onSubmit={() => this.handleSearch()}
-            placeholder="Поиск по имени персонажа"
-          />
-          <button type="submit">Найти</button>
-          <button onClick={() => this.testError()}>Сделать Ошибку</button>
-        </form>
-
-        {this.state.notFound && <h2>Не нашол никово прасти пажлауйста)</h2>}
-        {this.state.characters.length > 0 && (
-          <ul className="list">
-            {this.state.characters.map((character) => (
-              <CharacterPreviewCard key={character.id} character={character} />
-            ))}
-          </ul>
-        )}
-      </header>
-    )
+  if (loading) {
+    return <h1>Loading...</h1>
   }
+
+  return (
+    <header>
+      <h1>Hallo!</h1>
+
+      <form onSubmit={handleFormSubmit}>
+        <input
+          type="text"
+          value={queryString}
+          onChange={handleChange}
+          onSubmit={() => handleSearch()}
+          placeholder="Поиск по имени персонажа"
+        />
+        <button type="submit">Найти</button>
+        <button onClick={() => testError()}>Сделать Ошибку</button>
+      </form>
+
+      {notFound && <h2>Не нашол никово прасти пажлауйста)</h2>}
+      {characters.length > 0 && (
+        <ul className="list">
+          {characters.map((character) => (
+            <CharacterPreviewCard key={character.id} character={character} />
+          ))}
+        </ul>
+      )}
+    </header>
+  )
 }
 
 interface ErrorTestComponentProps {}
