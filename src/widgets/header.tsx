@@ -3,15 +3,12 @@ import { ChangeEvent, Component, FormEvent, useEffect, useState } from 'react'
 import { Character } from '@/src/types'
 import { CharacterPreviewCard } from '@/src/components/character-preview-card.tsx'
 import { getCharacters } from '@/src/api'
-import {
-  getMainQuerySearchStringfromStorage,
-  setMainQuerySearchStringToStorage,
-} from '@/src/const/local-storage-keys.ts'
+import { useSearchQueryToLocalStorage } from '@/src/hooks/useSearchQueryToLocalStorage.ts'
+import { MAIN_QUERY_SEARCH_STRING } from '@/src/const/local-storage-keys.ts'
 
 export function Header() {
-  const [queryString, setQueryString] = useState(
-    getMainQuerySearchStringfromStorage(),
-  )
+  const { searchQuery, setSearchQuery, setQueryToLocalStorage } =
+    useSearchQueryToLocalStorage(MAIN_QUERY_SEARCH_STRING)
   const [characters, setCharacters] = useState<Character[]>([])
   const [notFound, setNotFound] = useState(false)
   const [loading, setLoading] = useState(false)
@@ -24,9 +21,8 @@ export function Header() {
   const handleSearch = async () => {
     try {
       setLoading(true)
-
-      setMainQuerySearchStringToStorage(queryString)
-      const data = await getCharacters(queryString)
+      setQueryToLocalStorage(searchQuery)
+      const data = await getCharacters(searchQuery)
       setCharacters(data.results ? data.results : [])
       setNotFound(!data.results)
     } catch (e) {
@@ -43,7 +39,7 @@ export function Header() {
   }
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setQueryString(e.target.value)
+    setSearchQuery(e.target.value)
   }
 
   useEffect(() => {
@@ -67,7 +63,7 @@ export function Header() {
       <form onSubmit={handleFormSubmit}>
         <input
           type="text"
-          value={queryString}
+          value={searchQuery}
           onChange={handleChange}
           onSubmit={() => handleSearch()}
           placeholder="Поиск по имени персонажа"
