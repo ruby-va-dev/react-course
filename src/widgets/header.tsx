@@ -104,11 +104,13 @@ export class Header extends Component<HeaderProps, HeaderState> {
         </form>
 
         {this.state.notFound && <h2>Не нашол никово прасти пажлауйста)</h2>}
-        <ul className="list">
-          {this.state.characters.map((character) => (
-            <CharacterPreviewCard key={character.id} character={character} />
-          ))}
-        </ul>
+        {this.state.characters.length > 0 && (
+          <ul className="list">
+            {this.state.characters.map((character) => (
+              <CharacterPreviewCard key={character.id} character={character} />
+            ))}
+          </ul>
+        )}
       </header>
     )
   }
